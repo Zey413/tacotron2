@@ -160,13 +160,13 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
     hparams (object): comma separated list of "name=value" pairs.
     """
     if hparams.distributed_run:
-        init_distributed(hparams, n_gpus, rank, group_name)
+        init_distributed(hparams, n_gpus, rank, group_name)                 #设置多GPU
 
-    torch.manual_seed(hparams.seed)
+    torch.manual_seed(hparams.seed)                                         #随机种子
     torch.cuda.manual_seed(hparams.seed)
 
-    model = load_model(hparams)
-    learning_rate = hparams.learning_rate
+    model = load_model(hparams)                                             #定义模型
+    learning_rate = hparams.learning_rate                                   #设置超参数，配置文件已tf的方式
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate,
                                  weight_decay=hparams.weight_decay)
 
@@ -178,7 +178,7 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
     if hparams.distributed_run:
         model = apply_gradient_allreduce(model)
 
-    criterion = Tacotron2Loss()
+    criterion = Tacotron2Loss()                                             #损失函数
 
     logger = prepare_directories_and_logger(
         output_directory, log_directory, rank)
@@ -287,4 +287,4 @@ if __name__ == '__main__':
     print("cuDNN Benchmark:", hparams.cudnn_benchmark)
 
     train(args.output_directory, args.log_directory, args.checkpoint_path,
-          args.warm_start, args.n_gpus, args.rank, args.group_name, hparams)
+          args.warm_start, args.n_gpus, args.rank, args.group_name, hparams)  #根据参数进入train函数
