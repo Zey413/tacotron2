@@ -14,9 +14,9 @@ class TextMelLoader(torch.utils.data.Dataset):
         2) normalizes text and converts them to sequences of one-hot vectors
         3) computes mel-spectrograms from audio files.
     """
-    def __init__(self, audiopaths_and_text, hparams):
+    def __init__(self, audiopaths_and_text, hparams):                               #传进的train文件是:路径|文本
         self.audiopaths_and_text = load_filepaths_and_text(audiopaths_and_text)
-        self.text_cleaners = hparams.text_cleaners
+        self.text_cleaners = hparams.text_cleaners                                  #清洗
         self.max_wav_value = hparams.max_wav_value
         self.sampling_rate = hparams.sampling_rate
         self.load_mel_from_disk = hparams.load_mel_from_disk
@@ -58,14 +58,14 @@ class TextMelLoader(torch.utils.data.Dataset):
         return text_norm
 
     def __getitem__(self, index):
-        return self.get_mel_text_pair(self.audiopaths_and_text[index])
+        return self.get_mel_text_pair(self.audiopaths_and_text[index])             #传出音频文件对应路径的mel和文本
 
     def __len__(self):
         return len(self.audiopaths_and_text)
 
 
 class TextMelCollate():
-    """ Zero-pads model inputs and targets based on number of frames per setep
+    """ Zero-pads model inputs and targets based on number of frames per setep     #定义取出的格式 collate_fn
     """
     def __init__(self, n_frames_per_step):
         self.n_frames_per_step = n_frames_per_step
@@ -76,7 +76,7 @@ class TextMelCollate():
         ------
         batch: [text_normalized, mel_normalized]
         """
-        # Right zero-pad all one-hot text sequences to max input length
+        # Right zero-pad all one-hot text sequences to max input length            没一个batch进行排序len(x[0])  找出最长的 其余补齐
         input_lengths, ids_sorted_decreasing = torch.sort(
             torch.LongTensor([len(x[0]) for x in batch]),
             dim=0, descending=True)
