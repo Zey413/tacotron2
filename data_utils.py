@@ -10,7 +10,7 @@ from text import text_to_sequence
 from transformers import *
 import logging
 logging.basicConfig(level=logging.ERROR)
-tokenizer = BertTokenizer.from_Pretrained('bert-base-uncased')
+tokenizer = BertTokenizer.from_Pretrained('bert-base-uncased')                     #定义Tokenizer和model
 model = BertForPretraining.from_Pretrained('bert-base-uncased')
 
 class TextMelLoader(torch.utils.data.Dataset):
@@ -58,9 +58,11 @@ class TextMelLoader(torch.utils.data.Dataset):
 
         return melspec
 
+#     def get_text(self, text):
+#         text_norm = torch.IntTensor(text_to_sequence(text, self.text_cleaners))
+#         return text_norm
     def get_text(self, text):
-        text_norm = torch.IntTensor(text_to_sequence(text, self.text_cleaners))
-        return text_norm
+        return text
 
     def __getitem__(self, index):
         return self.get_mel_text_pair(self.audiopaths_and_text[index])             #传出音频文件对应路径的mel和文本
@@ -100,11 +102,19 @@ class TextMelCollate():
             add_special_tokens = True,
             max_length = max_input_len,
             pad_to_max_length = True,
-            return_attention_mask = True,
+            return_attention_mask = True,                            #[0,0,0,0,1]
             return_tensors = 'pt',
             )
             text_padded.append(encoded_dict['input_ids'])
             attention_mask_padded.append(encoded_dict['attention_mask'])
+          
+        text_padded = torch.cat(text_padded,dim = 0)
+        attention_mask_padded = torch.cat(attention_mask_padded,dim = 0)
+        
+        text_padded = torch.LongTensor(text_padded)
+        attention_mask_padded = torch.LongTensor(attention_mask_padded)
+        
+        #################################################################
 
         # Right zero-pad mel-spec
         num_mels = batch[0][1].size(0)
