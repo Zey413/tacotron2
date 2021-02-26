@@ -211,7 +211,7 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
                 param_group['lr'] = learning_rate
 
             model.zero_grad()
-            x, y = model.parse_batch(batch)
+            x, y = model.parse_batch(batch)                        #全部放入gpu并且转换类型  返回6个是用元组包起来
             y_pred = model(x)
 
             loss = criterion(y_pred, y)
