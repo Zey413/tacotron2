@@ -481,7 +481,7 @@ class Tacotron2(nn.Module):
         output_lengths = to_gpu(output_lengths).long()
 
         return (
-            (text_padded, input_lengths, mel_padded, max_len, output_lengths),
+            (text_padded, attention_mask_padded, input_lengths, mel_padded, max_len, output_lengths),
             (mel_padded, gate_padded))
 
     def parse_output(self, outputs, output_lengths=None):
