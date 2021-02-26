@@ -8,7 +8,9 @@ from utils import to_gpu, get_mask_from_lengths
 import numpy as np
 from transformers import *
 import logging
-
+logging.basicConfig(level=logging.ERROR)
+tokenizer = AlbertTokenizer.from_Pretrained('albert-large-v2')                     #定义Tokenizer和model
+model = AlbertModel.from_Pretrained('albert-large-v2').to('cuda')
 
 
 class LocationLayer(nn.Module):
@@ -157,7 +159,13 @@ class Encoder(nn.Module):
         
     def forward(self, text_inputs, attention_mask):
         with torch.no_grad():                      #将不会track 梯度
-            
+            outputs = model(text_inputs, token_type_ids = None, attention_mask= attention_mask)
+        return self.fc(outputs[0])   
+    
+    def inference(self, x):
+        with torch.no_grad():                      #将不会track 梯度
+            outputs = model(text_inputs, token_type_ids = None)
+        return self.fc(outputs[0])
 # class Encoder(nn.Module):
 #     """Encoder module:
 #         - Three 1-d convolution banks
