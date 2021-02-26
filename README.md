@@ -1,5 +1,5 @@
 # tacotron2
-Tacotron 2 - PyTorch implementation with faster-than-realtime inference
+Tacotron 2 - PyTorch implementation with faster-than-realtime inference  
 对tacotron2模型以及论文进行阅读，并将其中的Encoder利用bert模型进行改进
 
 参考文献：
