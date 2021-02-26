@@ -125,5 +125,5 @@ class TextMelCollate():
             gate_padded[i, mel.size(1)-1:] = 1
             output_lengths[i] = mel.size(1)
 
-        return text_padded, input_lengths, mel_padded, gate_padded, \
+        return text_padded, attention_mask_padded, input_lengths, mel_padded, gate_padded, \
             output_lengths
