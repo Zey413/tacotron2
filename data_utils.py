@@ -7,6 +7,11 @@ import layers
 from utils import load_wav_to_torch, load_filepaths_and_text
 from text import text_to_sequence
 
+from transformers import *
+import logging
+logging.basicConfig(level=logging.ERROR)
+tokenizer = BertTokenizer.from_Pretrained('bert-base-uncased')
+model = BertForPretraining.from_Pretrained('bert-base-uncased')
 
 class TextMelLoader(torch.utils.data.Dataset):
     """
@@ -82,11 +87,24 @@ class TextMelCollate():
             dim=0, descending=True)
         max_input_len = input_lengths[0]
 
-        text_padded = torch.LongTensor(len(batch), max_input_len)
-        text_padded.zero_()
-        for i in range(len(ids_sorted_decreasing)):
-            text = batch[ids_sorted_decreasing[i]][0]
-            text_padded[i, :text.size(0)] = text
+#         text_padded = torch.LongTensor(len(batch), max_input_len)
+#         text_padded.zero_()
+#         for i in range(len(ids_sorted_decreasing)):
+#             text = batch[ids_sorted_decreasing[i]][0]
+#             text_padded[i, :text.size(0)] = text
+            
+        text_padded, attention_mask_padded = [] , []
+        for text in batch:
+            encoded_dict = tokenizer.encode_plus(
+            text[0],
+            add_special_tokens = True,
+            max_length = max_input_len,
+            pad_to_max_length = True,
+            return_attention_mask = True,
+            return_tensors = 'pt',
+            )
+            text_padded.append(encoded_dict['input_ids'])
+            attention_mask_padded.append(encoded_dict['attention_mask'])
 
         # Right zero-pad mel-spec
         num_mels = batch[0][1].size(0)
